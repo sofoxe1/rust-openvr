@@ -309,46 +309,6 @@ impl Overlay {
         Ok(index)
     }
 
-    /// Sets the transform for this overlay, relative to another overlay.
-    ///
-    /// Wraps c++ `SetOverlayTransformOverlayRelative`.
-    // pub fn set_transform_overlay_relatve(
-    //     &mut self,
-    //     child_overlay: OverlayHandle,
-    //     parent_overlay: OverlayHandle,
-    //     parent_to_child: &Matrix3x4,
-    // ) -> Result<(), VROverlayError> {
-    //     let parent_to_child: &sys::HmdMatrix34_t = parent_to_child.into();
-    //     let err = unsafe {
-    //         self.0.SetOverlayTransformOverlayRelative(
-    //             child_overlay.0,
-    //             parent_overlay.0,
-    //             parent_to_child,
-    //         )
-    //     };
-    //     VROverlayError::new(err)
-    // }
-
-    /// Gets the transform for this overlay, relative to another overlay.
-    ///
-    /// Wraps c++ `GetOverlayTransformOverlayRelative`.
-    // pub fn get_transform_overlay_relative(
-    //     &mut self,
-    //     child_overlay: OverlayHandle,
-    //     parent_to_child: &mut Matrix3x4,
-    // ) -> Result<OverlayHandle, VROverlayError> {
-    //     let mut parent_overlay = sys::VROverlayHandle_t::default();
-    //     let parent_to_child: &mut sys::HmdMatrix34_t = parent_to_child.into();
-    //     let err = unsafe {
-    //         self.inner.as_mut().GetOverlayTransformOverlayRelative(
-    //             child_overlay.0,
-    //             &mut parent_overlay,
-    //             parent_to_child,
-    //         )
-    //     };
-    //     VROverlayError::new(err).map(|_| parent_overlay.into())
-    // }
-
     pub fn set_texture_bounds(
         &mut self,
         overlay: OverlayHandle,
