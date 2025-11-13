@@ -236,7 +236,10 @@ impl Overlay {
         origin_to_overlay: &Matrix3x4,
     ) -> Result<(), VROverlayError> {
         let origin_to_overlay: &sys::HmdMatrix34_t = origin_to_overlay.into();
-        #[cfg(not(target_os="windows"))] //idk abt macos, idk even why bindings differr between linux and windows
+        //fixme:
+        //for some reason bindings expect origin to be u32 on linux (at least on my OS) and i32 on windows
+        //this enum can be: 0,1,2 so it shouldn't cause any issues as underlaying bits are the same
+        #[cfg(not(target_os="windows"))] 
         let err = unsafe {
             self.0
                 .SetOverlayTransformAbsolute.unwrap()(overlay.0, (origin as u32).into(), (&raw const *origin_to_overlay).cast_mut()) 
