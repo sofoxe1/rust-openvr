@@ -32,7 +32,61 @@ pub enum VRApplicationError {
 }
 impl From<openvr_sys::EVRApplicationError> for VRApplicationError {
     fn from(val: openvr_sys::EVRApplicationError) -> Self {
-        unsafe { core::mem::transmute(val as i16) }
+        match val {
+            openvr_sys::EVRApplicationError_VRApplicationError_None => Self::None,
+            openvr_sys::EVRApplicationError_VRApplicationError_AppKeyAlreadyExists => {
+                Self::AppKeyAlreadyExists
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_NoManifest => Self::NoManifest,
+            openvr_sys::EVRApplicationError_VRApplicationError_NoApplication => Self::NoApplication,
+            openvr_sys::EVRApplicationError_VRApplicationError_InvalidIndex => Self::InvalidIndex,
+            openvr_sys::EVRApplicationError_VRApplicationError_UnknownApplication => {
+                Self::UnknownApplication
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_IPCFailed => Self::IPCFailed,
+            openvr_sys::EVRApplicationError_VRApplicationError_ApplicationAlreadyRunning => {
+                Self::ApplicationAlreadyRunning
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_InvalidManifest => {
+                Self::InvalidManifest
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_InvalidApplication => {
+                Self::InvalidApplication
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_LaunchFailed => Self::LaunchFailed,
+            openvr_sys::EVRApplicationError_VRApplicationError_ApplicationAlreadyStarting => {
+                Self::ApplicationAlreadyRunning
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_LaunchInProgress => {
+                Self::LaunchInProgress
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_OldApplicationQuitting => {
+                Self::OldApplicationQuitting
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_TransitionAborted => {
+                Self::TransitionAborted
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_IsTemplate => Self::IsTemplate,
+            openvr_sys::EVRApplicationError_VRApplicationError_SteamVRIsExiting => {
+                Self::SteamVRIsExiting
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_BufferTooSmall => {
+                Self::BufferTooSmall
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_PropertyNotSet => {
+                Self::PropertyNotSet
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_UnknownProperty => {
+                Self::UnknownProperty
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_InvalidParameter => {
+                Self::InvalidParameter
+            }
+            openvr_sys::EVRApplicationError_VRApplicationError_NotImplemented => {
+                Self::NotImplemented
+            }
+            _ => unreachable!(),
+        }
     }
 }
 impl VRApplicationError {
@@ -72,7 +126,34 @@ pub enum VRInputError {
 }
 impl From<openvr_sys::EVRInputError> for VRInputError {
     fn from(value: openvr_sys::EVRInputError) -> Self {
-        unsafe { core::mem::transmute(value as i8) }
+        match value {
+            openvr_sys::EVRInputError_VRInputError_None => Self::None,
+            openvr_sys::EVRInputError_VRInputError_NameNotFound => Self::NameNotFound,
+            openvr_sys::EVRInputError_VRInputError_WrongType => Self::WrongType,
+            openvr_sys::EVRInputError_VRInputError_InvalidHandle => Self::InvalidHandle,
+            openvr_sys::EVRInputError_VRInputError_InvalidParam => Self::InvalidParam,
+            openvr_sys::EVRInputError_VRInputError_NoSteam => Self::NoSteam,
+            openvr_sys::EVRInputError_VRInputError_MaxCapacityReached => Self::MaxCapacityReached,
+            openvr_sys::EVRInputError_VRInputError_IPCError => Self::IPCError,
+            openvr_sys::EVRInputError_VRInputError_NoActiveActionSet => Self::NoActiveActionSet,
+            openvr_sys::EVRInputError_VRInputError_InvalidDevice => Self::InvalidDevice,
+            openvr_sys::EVRInputError_VRInputError_InvalidSkeleton => Self::InvalidSkeleton,
+            openvr_sys::EVRInputError_VRInputError_InvalidBoneCount => Self::InvalidBoneCount,
+            openvr_sys::EVRInputError_VRInputError_InvalidCompressedData => {
+                Self::InvalidCompressedData
+            }
+            openvr_sys::EVRInputError_VRInputError_NoData => Self::NoData,
+            openvr_sys::EVRInputError_VRInputError_BufferTooSmall => Self::BufferTooSmall,
+            openvr_sys::EVRInputError_VRInputError_MismatchedActionManifest => {
+                Self::MismatchedActionManifest
+            }
+            openvr_sys::EVRInputError_VRInputError_MissingSkeletonData => Self::MissingSkeletonData,
+            openvr_sys::EVRInputError_VRInputError_InvalidBoneIndex => Self::InvalidBoneIndex,
+            openvr_sys::EVRInputError_VRInputError_InvalidPriority => Self::InvalidPriority,
+            openvr_sys::EVRInputError_VRInputError_PermissionDenied => Self::PermissionDenied,
+            openvr_sys::EVRInputError_VRInputError_InvalidRenderModel => Self::InvalidRenderModel,
+            _ => unreachable!(),
+        }
     }
 }
 impl VRInputError {
@@ -97,7 +178,18 @@ pub enum VRSettingsError {
 }
 impl From<openvr_sys::EVRSettingsError> for VRSettingsError {
     fn from(value: openvr_sys::EVRSettingsError) -> Self {
-        unsafe { core::mem::transmute(value as i8) }
+        match value {
+            openvr_sys::EVRSettingsError_VRSettingsError_None => Self::None,
+            openvr_sys::EVRSettingsError_VRSettingsError_IPCFailed => Self::IPCFailed,
+            openvr_sys::EVRSettingsError_VRSettingsError_WriteFailed => Self::WriteFailed,
+            openvr_sys::EVRSettingsError_VRSettingsError_ReadFailed => Self::ReadFailed,
+            openvr_sys::EVRSettingsError_VRSettingsError_JsonParseFailed => Self::JsonParseFailed,
+            openvr_sys::EVRSettingsError_VRSettingsError_UnsetSettingHasNoDefault => {
+                Self::UnsetSettingHasNoDefault
+            }
+            openvr_sys::EVRSettingsError_VRSettingsError_AccessDenied => Self::AccessDenied,
+            _ => unreachable!(),
+        }
     }
 }
 impl VRSettingsError {
@@ -143,7 +235,52 @@ pub enum VROverlayError {
 }
 impl From<openvr_sys::EVROverlayError> for VROverlayError {
     fn from(value: openvr_sys::EVROverlayError) -> Self {
-        unsafe { core::mem::transmute(value as i8) }
+        match value {
+            openvr_sys::EVROverlayError_VROverlayError_None => Self::None,
+            openvr_sys::EVROverlayError_VROverlayError_UnknownOverlay => Self::UnknownOverlay,
+            openvr_sys::EVROverlayError_VROverlayError_InvalidHandle => Self::InvalidHandle,
+            openvr_sys::EVROverlayError_VROverlayError_PermissionDenied => Self::PermissionDenied,
+            openvr_sys::EVROverlayError_VROverlayError_OverlayLimitExceeded => {
+                Self::OverlayLimitExceeded
+            }
+            openvr_sys::EVROverlayError_VROverlayError_WrongVisibilityType => {
+                Self::WrongVisibilityType
+            }
+            openvr_sys::EVROverlayError_VROverlayError_KeyTooLong => Self::KeyTooLong,
+            openvr_sys::EVROverlayError_VROverlayError_NameTooLong => Self::NameTooLong,
+            openvr_sys::EVROverlayError_VROverlayError_KeyInUse => Self::KeyInUse,
+            openvr_sys::EVROverlayError_VROverlayError_WrongTransformType => {
+                Self::WrongTransformType
+            }
+            openvr_sys::EVROverlayError_VROverlayError_InvalidTrackedDevice => {
+                Self::InvalidTrackedDevice
+            }
+            openvr_sys::EVROverlayError_VROverlayError_InvalidParameter => Self::InvalidParameter,
+            openvr_sys::EVROverlayError_VROverlayError_ThumbnailCantBeDestroyed => {
+                Self::ThumbnailCantBeDestroyed
+            }
+            openvr_sys::EVROverlayError_VROverlayError_ArrayTooSmall => Self::ArrayTooSmall,
+            openvr_sys::EVROverlayError_VROverlayError_RequestFailed => Self::RequestFailed,
+            openvr_sys::EVROverlayError_VROverlayError_InvalidTexture => Self::InvalidTexture,
+            openvr_sys::EVROverlayError_VROverlayError_UnableToLoadFile => Self::UnableToLoadFile,
+            openvr_sys::EVROverlayError_VROverlayError_KeyboardAlreadyInUse => {
+                Self::KeyboardAlreadyInUse
+            }
+            openvr_sys::EVROverlayError_VROverlayError_NoNeighbor => Self::NoNeighbor,
+            openvr_sys::EVROverlayError_VROverlayError_TooManyMaskPrimitives => {
+                Self::TooManyMaskPrimitives
+            }
+            openvr_sys::EVROverlayError_VROverlayError_BadMaskPrimitive => Self::BadMaskPrimitive,
+            openvr_sys::EVROverlayError_VROverlayError_TextureAlreadyLocked => {
+                Self::TextureAlreadyLocked
+            }
+            openvr_sys::EVROverlayError_VROverlayError_TextureLockCapacityReached => {
+                Self::TextureLockCapacityReached
+            }
+            openvr_sys::EVROverlayError_VROverlayError_TextureNotLocked => Self::TextureNotLocked,
+            openvr_sys::EVROverlayError_VROverlayError_TimedOut => Self::TimedOut,
+            _ => unreachable!(),
+        }
     }
 }
 impl VROverlayError {

@@ -8,12 +8,29 @@ pub enum TrackingUniverseOrigin {
 }
 impl From<TrackingUniverseOrigin> for isize{
     fn from(value: TrackingUniverseOrigin) -> Self {
-        unsafe {core::mem::transmute::<TrackingUniverseOrigin,i8>(value) as isize}
+        match value {
+            TrackingUniverseOrigin::Seated => sys::ETrackingUniverseOrigin_TrackingUniverseSeated as isize,
+            TrackingUniverseOrigin::Standing => sys::ETrackingUniverseOrigin_TrackingUniverseStanding as isize,
+            TrackingUniverseOrigin::RawAndUncalibrated => sys::ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated as isize,
+        }
     }
 }
 impl From<TrackingUniverseOrigin> for i32{
     fn from(value: TrackingUniverseOrigin) -> Self {
-        unsafe {core::mem::transmute::<TrackingUniverseOrigin,i8>(value) as i32}
+       match value {
+            TrackingUniverseOrigin::Seated => sys::ETrackingUniverseOrigin_TrackingUniverseSeated as i32,
+            TrackingUniverseOrigin::Standing => sys::ETrackingUniverseOrigin_TrackingUniverseStanding as i32,
+            TrackingUniverseOrigin::RawAndUncalibrated => sys::ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated as i32,
+        }
+    }
+}
+impl From<TrackingUniverseOrigin> for u32{
+    fn from(value: TrackingUniverseOrigin) -> Self {
+       match value {
+            TrackingUniverseOrigin::Seated => sys::ETrackingUniverseOrigin_TrackingUniverseSeated as u32,
+            TrackingUniverseOrigin::Standing => sys::ETrackingUniverseOrigin_TrackingUniverseStanding as u32,
+            TrackingUniverseOrigin::RawAndUncalibrated => sys::ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated as u32,
+        }
     }
 }
  

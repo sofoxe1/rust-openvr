@@ -3,7 +3,10 @@ use enumset::{EnumSet, EnumSetType};
 use crate::{errors::VRInputError, pose, Input};
 
 use std::{
-    ffi::{CStr, CString}, mem::MaybeUninit, path::Path, time::Duration
+    ffi::{CStr, CString},
+    mem::MaybeUninit,
+    path::Path,
+    time::Duration,
 };
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub enum TrackedControllerRole {
@@ -16,17 +19,25 @@ pub enum TrackedControllerRole {
 }
 impl From<openvr_sys::ETrackedControllerRole> for TrackedControllerRole {
     fn from(item: openvr_sys::ETrackedControllerRole) -> Self {
-        unsafe {core::mem::transmute(item as i8)}
+        match item {
+            openvr_sys::ETrackedControllerRole_TrackedControllerRole_Invalid => Self::Invalid,
+            openvr_sys::ETrackedControllerRole_TrackedControllerRole_LeftHand => Self::LeftHand,
+            openvr_sys::ETrackedControllerRole_TrackedControllerRole_RightHand => Self::RightHand,
+            openvr_sys::ETrackedControllerRole_TrackedControllerRole_OptOut => Self::OptOut,
+            openvr_sys::ETrackedControllerRole_TrackedControllerRole_Treadmill => Self::Treadmill,
+            openvr_sys::ETrackedControllerRole_TrackedControllerRole_Stylus => Self::Stylus,
+            _ => unreachable!(),
+        }
     }
 }
-#[derive(Clone, Copy,PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct VRActionHandle(pub openvr_sys::VRActionHandle_t);
 #[repr(transparent)]
-#[derive(Clone, Copy,PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct VRActionSetHandle(pub openvr_sys::VRActionHandle_t);
 #[repr(transparent)]
-#[derive(Clone, Copy,PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct VRInputValueHandle(pub openvr_sys::VRInputValueHandle_t);
 #[repr(transparent)]
 #[derive(Clone, Copy)]
@@ -67,9 +78,7 @@ impl Input {
     }
 
     pub fn set_action_manifest_raw(&mut self, path: &CStr) -> Result<()> {
-        let err=unsafe {
-            self.0.SetActionManifestPath.unwrap()(path.as_ptr().cast_mut().cast())
-        };
+        let err = unsafe { self.0.SetActionManifestPath.unwrap()(path.as_ptr().cast_mut().cast()) };
         VRInputError::new(err)
     }
 
@@ -84,10 +93,10 @@ impl Input {
     }
 
     pub fn get_action_set_handle_raw(&mut self, name: &CStr) -> Result<VRActionSetHandle> {
-        let mut handle: VRActionSetHandle=VRActionSetHandle(0);
+        let mut handle: VRActionSetHandle = VRActionSetHandle(0);
 
         let err = unsafe {
-            self.0.GetActionSetHandle.unwrap()(name.as_ptr().cast_mut().cast(),&mut handle.0)
+            self.0.GetActionSetHandle.unwrap()(name.as_ptr().cast_mut().cast(), &mut handle.0)
         };
 
         VRInputError::new(err)?;
@@ -110,7 +119,7 @@ impl Input {
         let mut handle: VRActionHandle = VRActionHandle(0);
 
         let err = unsafe {
-            self.0.GetActionHandle.unwrap()(name.as_ptr().cast_mut().cast(),&mut handle.0)
+            self.0.GetActionHandle.unwrap()(name.as_ptr().cast_mut().cast(), &mut handle.0)
         };
 
         VRInputError::new(err)?;
@@ -133,7 +142,7 @@ impl Input {
         let mut handle: VRInputValueHandle = VRInputValueHandle(0);
 
         let err = unsafe {
-            self.0.GetInputSourceHandle.unwrap()(name.as_ptr().cast_mut().cast(),&mut handle.0)
+            self.0.GetInputSourceHandle.unwrap()(name.as_ptr().cast_mut().cast(), &mut handle.0)
         };
 
         VRInputError::new(err)?;
@@ -144,7 +153,11 @@ impl Input {
 
     pub fn update_actions(&mut self, sets: &mut [VRActiveActionSet]) -> Result<()> {
         let err = unsafe {
-            self.0.UpdateActionState.unwrap()(sets.as_mut_ptr().cast(),size_of::<VRActiveActionSet>() as u32,sets.len() as u32)
+            self.0.UpdateActionState.unwrap()(
+                sets.as_mut_ptr().cast(),
+                size_of::<VRActiveActionSet>() as u32,
+                sets.len() as u32,
+            )
         };
 
         VRInputError::new(err)
@@ -157,7 +170,12 @@ impl Input {
     ) -> Result<VRDigitalActionData> {
         let mut data: MaybeUninit<VRDigitalActionData> = MaybeUninit::uninit();
         let err = unsafe {
-            self.0.GetDigitalActionData.unwrap()(action.0,data.as_mut_ptr().cast(),size_of::<VRDigitalActionData>() as u32 ,restrict.0)
+            self.0.GetDigitalActionData.unwrap()(
+                action.0,
+                data.as_mut_ptr().cast(),
+                size_of::<VRDigitalActionData>() as u32,
+                restrict.0,
+            )
         };
         VRInputError::new(err)?;
         Ok(VRDigitalActionData(unsafe { data.assume_init().0 }))
@@ -170,7 +188,12 @@ impl Input {
     ) -> Result<VRAnalogActionData> {
         let mut data: MaybeUninit<VRAnalogActionData> = MaybeUninit::uninit();
         let err = unsafe {
-            self.0.GetAnalogActionData.unwrap()(action.0,data.as_mut_ptr().cast(),size_of::<VRAnalogActionData>() as u32,restrict.0)
+            self.0.GetAnalogActionData.unwrap()(
+                action.0,
+                data.as_mut_ptr().cast(),
+                size_of::<VRAnalogActionData>() as u32,
+                restrict.0,
+            )
         };
         VRInputError::new(err)?;
         Ok(VRAnalogActionData(unsafe { data.assume_init().0 }))
@@ -185,7 +208,14 @@ impl Input {
     ) -> Result<VRPoseActionData> {
         let mut data: MaybeUninit<VRPoseActionData> = MaybeUninit::uninit();
         let err = unsafe {
-            self.0.GetPoseActionDataRelativeToNow.unwrap()(action.0,universe,seconds_from_now,data.as_mut_ptr().cast(),size_of::<VRPoseActionData>() as u32,restrict.0)
+            self.0.GetPoseActionDataRelativeToNow.unwrap()(
+                action.0,
+                universe,
+                seconds_from_now,
+                data.as_mut_ptr().cast(),
+                size_of::<VRPoseActionData>() as u32,
+                restrict.0,
+            )
         };
 
         VRInputError::new(err)?;
@@ -201,7 +231,12 @@ impl Input {
     ) -> Result<[u64; 16]> {
         let mut origins: [u64; 16] = unsafe { std::mem::zeroed() };
         let err = unsafe {
-            self.0.GetActionOrigins.unwrap()(action_set.0,digital_action_handle.0,origins.as_mut_ptr().cast(),16)
+            self.0.GetActionOrigins.unwrap()(
+                action_set.0,
+                digital_action_handle.0,
+                origins.as_mut_ptr().cast(),
+                16,
+            )
         };
         VRInputError::new(err)?;
         Ok(origins)
@@ -287,7 +322,14 @@ impl Input {
         restrict: VRInputValueHandle,
     ) -> Result<()> {
         let err = unsafe {
-            self.0.TriggerHapticVibrationAction.unwrap()(action.0,start_seconds_from_now,duration.as_secs_f32(),frequency,amplitude,restrict.0)
+            self.0.TriggerHapticVibrationAction.unwrap()(
+                action.0,
+                start_seconds_from_now,
+                duration.as_secs_f32(),
+                frequency,
+                amplitude,
+                restrict.0,
+            )
         };
 
         VRInputError::new(err)
@@ -309,7 +351,12 @@ impl Input {
             None => 0,
         };
         let err = unsafe {
-            self.0.OpenBindingUI.unwrap()(app_key_cstr_ptr.cast_mut().cast(),action_set,input_device.0,show_on_desktop)
+            self.0.OpenBindingUI.unwrap()(
+                app_key_cstr_ptr.cast_mut().cast(),
+                action_set,
+                input_device.0,
+                show_on_desktop,
+            )
         };
         VRInputError::new(err)
     }
@@ -322,7 +369,13 @@ impl Input {
         let mut count: MaybeUninit<u32> = MaybeUninit::uninit();
 
         let err = unsafe {
-            self.0.GetActionBindingInfo.unwrap()(action.0,data.as_mut_ptr().cast(),size_of::<openvr_sys::InputBindingInfo_t>() as u32,16,count.as_mut_ptr().cast())
+            self.0.GetActionBindingInfo.unwrap()(
+                action.0,
+                data.as_mut_ptr().cast(),
+                size_of::<openvr_sys::InputBindingInfo_t>() as u32,
+                16,
+                count.as_mut_ptr().cast(),
+            )
         };
         VRInputError::new(err)?;
 
