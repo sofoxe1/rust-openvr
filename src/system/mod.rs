@@ -112,7 +112,7 @@ impl System {
 
     pub fn tracked_device_class(&self, index: TrackedDeviceIndex) -> TrackedDeviceClass {
         use self::TrackedDeviceClass::*;
-        match unsafe { self.0.GetTrackedDeviceClass.unwrap()(index) } {
+        match unsafe { self.0.GetTrackedDeviceClass.unwrap()(index.0) } {
             sys::ETrackedDeviceClass_TrackedDeviceClass_Invalid => Invalid,
             sys::ETrackedDeviceClass_TrackedDeviceClass_HMD => HMD,
             sys::ETrackedDeviceClass_TrackedDeviceClass_Controller => Controller,
@@ -124,7 +124,7 @@ impl System {
     }
 
     pub fn is_tracked_device_connected(&self, index: TrackedDeviceIndex) -> bool {
-        unsafe { self.0.IsTrackedDeviceConnected.unwrap()(index) }
+        unsafe { self.0.IsTrackedDeviceConnected.unwrap()(index.0) }
     }
 
     pub fn poll_next_event_with_pose(
@@ -195,10 +195,10 @@ impl System {
                 role as sys::ETrackedControllerRole,
             )
         };
-        if x == tracked_device_index::INVALID {
+        if TrackedDeviceIndex(x) == tracked_device_index::INVALID {
             None
         } else {
-            Some(x)
+            Some(tracking::TrackedDeviceIndex(x))
         }
     }
 
@@ -207,7 +207,7 @@ impl System {
         &self,
         i: TrackedDeviceIndex,
     ) -> Option<TrackedControllerRole> {
-        let x = unsafe { self.0.GetControllerRoleForTrackedDeviceIndex.unwrap()(i) };
+        let x = unsafe { self.0.GetControllerRoleForTrackedDeviceIndex.unwrap()(i.0) };
         match x {
             sys::ETrackedControllerRole_TrackedControllerRole_LeftHand => {
                 Some(TrackedControllerRole::LeftHand)
@@ -252,8 +252,8 @@ impl System {
         let mut error: mem::MaybeUninit<TrackedPropertyError> = mem::MaybeUninit::uninit();
         let r = unsafe {
             self.0.GetBoolTrackedDeviceProperty.unwrap()(
-                device,
-                property,
+                device.0,
+                property.0,
                 error.as_mut_ptr() as *mut sys::TrackedPropertyError,
             )
         };
@@ -275,8 +275,8 @@ impl System {
         let mut error: mem::MaybeUninit<TrackedPropertyError> = mem::MaybeUninit::uninit();
         let r = unsafe {
             self.0.GetFloatTrackedDeviceProperty.unwrap()(
-                device,
-                property,
+                device.0,
+                property.0,
                 error.as_mut_ptr() as *mut sys::TrackedPropertyError,
             )
         };
@@ -299,8 +299,8 @@ impl System {
 
         let r = unsafe {
             self.0.GetInt32TrackedDeviceProperty.unwrap()(
-                device,
-                property,
+                device.0,
+                property.0,
                 error.as_mut_ptr() as *mut sys::TrackedPropertyError,
             )
         };
@@ -323,8 +323,8 @@ impl System {
 
         let r = unsafe {
             self.0.GetUint64TrackedDeviceProperty.unwrap()(
-                device,
-                property,
+                device.0,
+                property.0,
                 error.as_mut_ptr() as *mut sys::TrackedPropertyError,
             )
         };
@@ -347,8 +347,8 @@ impl System {
 
         let r = unsafe {
             self.0.GetMatrix34TrackedDeviceProperty.unwrap()(
-                device,
-                property,
+                device.0,
+                property.0,
                 error.as_mut_ptr() as *mut sys::TrackedPropertyError,
             )
         };
@@ -371,8 +371,8 @@ impl System {
             let mut error = mem::MaybeUninit::uninit();
             let res = get_string(|ptr, n| {
                 self.0.GetStringTrackedDeviceProperty.unwrap()(
-                    device,
-                    property,
+                    device.0,
+                    property.0,
                     ptr,
                     n,
                     error.as_mut_ptr(),
@@ -420,7 +420,7 @@ impl System {
         unsafe {
             let mut state = mem::MaybeUninit::uninit();
             if self.0.GetControllerState.unwrap()(
-                device,
+                device.0,
                 &mut state as *mut _ as *mut _,
                 mem::size_of_val(&state) as u32,
             ) {
@@ -435,7 +435,7 @@ impl System {
         &self,
         device: TrackedDeviceIndex,
     ) -> DeviceActivityLevel {
-        unsafe { self.0.GetTrackedDeviceActivityLevel.unwrap()(device).into() }
+        unsafe { self.0.GetTrackedDeviceActivityLevel.unwrap()(device.0).into() }
     }
     /// See `controller_state`
     pub fn controller_state_with_pose(
@@ -449,7 +449,7 @@ impl System {
         unsafe {
             if self.0.GetControllerStateWithPose.unwrap()(
                 origin as sys::ETrackingUniverseOrigin,
-                device,
+                device.0,
                 state.as_mut_ptr() as *mut _,
                 mem::size_of::<ControllerState>() as u32,
                 pose.as_mut_ptr(),
@@ -468,7 +468,7 @@ impl System {
     ///
     /// Vive controller haptics respond to axis 0. OpenVR seems to reject durations longer than 3999us.
     pub fn trigger_haptic_pulse(&self, device: TrackedDeviceIndex, axis: u32, microseconds: u16) {
-        unsafe { self.0.TriggerHapticPulse.unwrap()(device, axis, microseconds) }
+        unsafe { self.0.TriggerHapticPulse.unwrap()(device.0, axis, microseconds) }
     }
 
     /// Call this to acknowledge to the system that `Event::Quit` has been received and that the process is exiting.
@@ -495,7 +495,7 @@ impl System {
         let mut err = TrackedPropertyError(0);
         unsafe {
             let read = self.0.GetStringTrackedDeviceProperty.unwrap()(
-                index,
+                index.0,
                 prop,
                 vec.as_mut_ptr().cast(),
                 vec.capacity() as u32,
@@ -516,7 +516,7 @@ impl System {
         let mut err = TrackedPropertyError(0);
         unsafe {
             let ret =
-                self.0.GetBoolTrackedDeviceProperty.unwrap()(index, prop, (&raw mut err).cast());
+                self.0.GetBoolTrackedDeviceProperty.unwrap()(index.0, prop, (&raw mut err).cast());
             if err != system::TrackedPropertyError(0) {
                 return Err(err);
             }
@@ -531,7 +531,7 @@ impl System {
         let mut err = TrackedPropertyError(0);
         unsafe {
             let ret =
-                self.0.GetFloatTrackedDeviceProperty.unwrap()(index, prop, (&raw mut err).cast());
+                self.0.GetFloatTrackedDeviceProperty.unwrap()(index.0, prop, (&raw mut err).cast());
             if err != system::TrackedPropertyError(0) {
                 return Err(err);
             }
@@ -546,7 +546,7 @@ impl System {
         let mut err = TrackedPropertyError(0);
         unsafe {
             let ret =
-                self.0.GetInt32TrackedDeviceProperty.unwrap()(index, prop, (&raw mut err).cast());
+                self.0.GetInt32TrackedDeviceProperty.unwrap()(index.0, prop, (&raw mut err).cast());
             if err != system::TrackedPropertyError(0) {
                 return Err(err);
             }
@@ -561,7 +561,7 @@ impl System {
         let mut err = TrackedPropertyError(0);
         unsafe {
             let ret =
-                self.0.GetUint64TrackedDeviceProperty.unwrap()(index, prop, (&raw mut err).cast());
+                self.0.GetUint64TrackedDeviceProperty.unwrap()(index.0, prop, (&raw mut err).cast());
             if err != system::TrackedPropertyError(0) {
                 return Err(err);
             }

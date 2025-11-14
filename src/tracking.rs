@@ -93,18 +93,18 @@ pub enum TrackedDeviceClass {
     TrackingReference = sys::ETrackedDeviceClass_TrackedDeviceClass_TrackingReference as isize,
     DisplayRedirect = sys::ETrackedDeviceClass_TrackedDeviceClass_DisplayRedirect as isize,
 }
-
-pub type TrackedDeviceIndex = sys::TrackedDeviceIndex_t;
+#[derive(Clone, Copy,PartialEq,Debug)]
+pub struct TrackedDeviceIndex(pub sys::TrackedDeviceIndex_t);
 
 pub mod tracked_device_index {
     use super::*;
-    pub const HMD: TrackedDeviceIndex = sys::k_unTrackedDeviceIndex_Hmd as TrackedDeviceIndex;
-    pub const INVALID: TrackedDeviceIndex = sys::k_unTrackedDeviceIndexInvalid as TrackedDeviceIndex;
+    pub const HMD: TrackedDeviceIndex = TrackedDeviceIndex(sys::k_unTrackedDeviceIndex_Hmd as u32);
+    pub const INVALID: TrackedDeviceIndex = TrackedDeviceIndex(sys::k_unTrackedDeviceIndexInvalid as u32);
 }
+#[derive(Clone, Copy,PartialEq,Debug)]
+pub struct TrackedDeviceProperty(pub sys::ETrackedDeviceProperty);
 
-pub type TrackedDeviceProperty = sys::ETrackedDeviceProperty;
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Clone, Copy,PartialEq,Debug)]
 pub enum TrackedControllerRole {
     LeftHand = sys::ETrackedControllerRole_TrackedControllerRole_LeftHand as isize,
     RightHand = sys::ETrackedControllerRole_TrackedControllerRole_RightHand as isize,
@@ -116,5 +116,4 @@ pub enum TrackedControllerRole {
 }
 
 pub const MAX_TRACKED_DEVICE_COUNT: usize = sys::k_unMaxTrackedDeviceCount as usize;
-
-pub type TrackedDevicePoses = [TrackedDevicePose; MAX_TRACKED_DEVICE_COUNT];
+pub type TrackedDevicePoses=[TrackedDevicePose; MAX_TRACKED_DEVICE_COUNT];

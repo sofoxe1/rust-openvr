@@ -277,7 +277,7 @@ impl Overlay {
         let device_to_overlay: &sys::HmdMatrix34_t = device_to_overlay.into();
         let err = unsafe {
             self.0
-                .SetOverlayTransformTrackedDeviceRelative.unwrap()(overlay.0, index, (&raw const *device_to_overlay).cast_mut())
+                .SetOverlayTransformTrackedDeviceRelative.unwrap()(overlay.0, index.0, (&raw const *device_to_overlay).cast_mut())
         };
         VROverlayError::new(err)
     }
@@ -301,7 +301,7 @@ impl Overlay {
         if index==sys::k_unTrackedDeviceIndexInvalid as u32{
             return Err(VROverlayError::RequestFailed);
         }
-        Ok(index)
+        Ok(crate::tracking::TrackedDeviceIndex(index))
     }
 
     pub fn set_texture_bounds(
