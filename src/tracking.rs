@@ -15,6 +15,9 @@ impl From<TrackingUniverseOrigin> for isize{
         }
     }
 }
+//fixme:
+//for some reason bindings to SetOverlayTransformAbsolute expect origin to be u32 on linux (at least on my OS) and i32 on windows
+//this enum can be: 0,1,2 so it shouldn't cause any issues as underlaying bits are the same
 impl From<TrackingUniverseOrigin> for i32{
     fn from(value: TrackingUniverseOrigin) -> Self {
        match value {
@@ -33,7 +36,6 @@ impl From<TrackingUniverseOrigin> for u32{
         }
     }
 }
- 
 #[repr(C)]
 #[derive(Default, Debug, Copy, Clone)]
 pub struct TrackedDevicePose(pub sys::TrackedDevicePose_t);
