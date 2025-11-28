@@ -147,7 +147,7 @@ impl Context {
 
     /// constructed.
     pub unsafe fn shutdown(&self) {
-        if INITIALIZED.load(Ordering::Acquire) {
+        if self.live.swap(false,Ordering::Acquire) {
             sys::VR_ShutdownInternal();
             INITIALIZED.store(false, Ordering::Release);
         }
